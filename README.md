@@ -48,6 +48,8 @@ Any third party contract that wishes to receive and hold these types of tokens m
 
 Additionally, the third-party contract owner may want to add a function to transfer tokens to the owner's wallet on demand, once `CheckWitness` has been used to verify the owner’s signature, if the tokens are ever to be redeemed for some other currency (in the case of an ICO that accepts MCT as payment, for example).
 
+
+
 ## Staked storage
 
 Third-party smart contracts that stake a minimum amount of MCT tokens are allowed to use the MCT smart contract as a storage proxy. The minimum starting stake is 10,000 (ten-thousand) MCT, 
@@ -59,6 +61,17 @@ Using staked storage in the MCT contract means a smart contract author can deplo
 
 Advanced features such as `Find` and `Migrate` are not implemented. If a smart contract needs these features, it is advisable to pay the 490 GAS for a storage-enabled contract rather than use staked storage.
 
+## Example code
+
+An example contract for a dApp that uses MCT as its means of exchange of value as well as for storage can be found at https://github.com/Splyse/MCT/blob/master/mct-dapp-template.py - this contract could be deployed for only 90 GAS.
+
+## TestNet contract
+
+Two versions of MCT exist on the Neo TestNet, tokens CTX (scripthash 9aff1e08aea2048a26a3d2ddbb3df495b932b1e7) and CTY (scripthash 81d9cbc994dd104d3e03514b47eb23c6c406b2e7). CTX was airdropped to TestNet addresses holding TestNet NEP-5 tokens but additional tokens may be requested by developers looking to test their contracts against the TestNet tokens.
+
+## Privnet contract
+
+The MCT contract source is not yet publicly available, however, a custom-compiled version is available for the neo-privnet-docker environment, using the private key of the node1 wallet as the contract owner.
 
 ## Frequently Asked Questions
 
