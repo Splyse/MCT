@@ -103,3 +103,6 @@ https://github.com/Splyse/MCT is the only official website. Beware of phishing p
 ### Is there a Discord/Telegram server?
 There is a Discord server at https://discord.gg/vrA8tcq. There is no Telegram server or any other official support forum.
 
+## Scam alerts
+### Twitter
+Twitter username @mcttoken is *not* us - we do not know who is behind this account although it is pretending to be the official Twitter feed of MCT. Beware of attempts to steal your private keys or funds by scammers promising to send you MCT - as we said - any such giveaways are bogus. The airdrop is over and there will be no further distributions from the team.
