@@ -14,9 +14,11 @@ Scripthash: a87cc2a513f5d8b4a42432343687c2127c60bc3f
 
 ## Overview
 
-The NEO Smart Economy has a major limitation in that although smart contracts can receive funds (system assets like NEO or GAS) they cannot send funds without intervention of off-chain code that responds to events emitted by the smart contract and creates and broadcasts new transactions. Additionally, since NEO uses the UTXO model for assets, it is possible to send funds to a contract without the contract’s awareness, leading to issues requiring manual intervention to return funds that are sent in error. 
+The NEO Smart Economy has a major limitation in that although smart contracts can receive funds (system assets like NEO or GAS) they cannot send funds without intervention of off-chain code that responds to events emitted by the smart contract and creates and broadcasts new transactions. 
 
-Current NEP-5 tokens have the same limitations as system assets:
+The introduction of NEP-7 in Neo 2.7.5 has eased some of the difficulties with receiving system assets by a smart contract. Now a contract will be able to be triggered upon receiving NEO/GAS, giving the contract the opportunity to perform actions or reject the transfer. The problem of the inability to send NEO/GAS in a single operation still remains, however.
+
+Current NEP-5 tokens have more limitations than system assets:
 
 * The smart contract will receive no notification that the tokens were sent 
 * The smart contract will not be able to spend tokens it holds without coordination from an off-chain wallet holding the owner's key
