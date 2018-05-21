@@ -134,7 +134,7 @@ def handle_token_received(chash, args):
 def Get(key):
     return MCTContract('Get', [key])
 
-def Delete(key, value):
+def Delete(key):
     return MCTContract('Delete', [key]) 
 
 def Put(key, value):
