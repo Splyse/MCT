@@ -53,8 +53,6 @@ def Main(operation, args):
                 return True
             print('staked storage call failed')
             return False
-
-            return True
          
         if operation == 'ownerWithdraw':
             if not CheckWitness(OWNER):
