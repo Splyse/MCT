@@ -11,7 +11,7 @@ This code demonstrates use of MCT receive/send and staked storage functions
 
 Deployment in neo-python:
 
-import contract mct-dapp-template.py 0710 05 False False
+import contract mct-dapp-template.avm 0710 05 False False
 wallet tkn_send MCT {from address} {dApp contract address} {minimum stake}
 
 """
