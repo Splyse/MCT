@@ -79,7 +79,7 @@ The MCT contract source is not yet publicly available, however, a custom-compile
 
 ### When ICO?
 There will never be an MCT ICO, the MCT smart contract *is* the final product. An
-initial airdrop was used to distribute MCT into the ecosystem. There will be no further giveaways. Anyone claiming to be giving away MCT at this point is fraudulent.
+initial airdrop was used to distribute MCT into the ecosystem. There will be no further giveaways. Anyone pretending to be someone from the MCT team claiming they are giving away MCT at this point is fraudulent.
 
 ### What were the airdrop rules?
 Tokens were distributed to any Neo address that received a transfer of *any* existing NEP-5 token on the Neo MainNet before May 8, 2018 00:00:00 UTC (ending with MainNet block 2240482). 
@@ -107,4 +107,4 @@ There is a Discord server at https://discord.gg/vrA8tcq. There is no Telegram se
 
 ## Scam alerts
 ### Twitter
-Twitter username @mcttoken is *not* us - we do not know who is behind this account although it is pretending to be the official Twitter feed of MCT. Beware of attempts to steal your private keys or funds by scammers promising to send you MCT - as we said - any such giveaways are bogus. The airdrop is over and there will be no further distributions from the team.
+Twitter username @mcttoken is *not* us - we do not know who is behind this account although it is pretending to be the official Twitter feed of MCT. Beware of attempts to steal your private keys or funds by scammers promising to send you MCT - as we said - any such giveaways are bogus. The airdrop is over and there will be no further distributions from the team. The official MCT twitter account is https://twitter.com/MCT_Token
