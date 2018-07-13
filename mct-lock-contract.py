@@ -36,12 +36,12 @@ from boa.interop.System.ExecutionEngine import GetExecutingScriptHash, GetCallin
 from boa.interop.Neo.App import RegisterAppCall
 
 # Party1 is the depositor, who is sending funds to be locked in the contract
-PARTY1=b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+PARTY1 = b'#\xba\'\x03\xc52c\xe8\xd6\xe5"\xdc2 39\xdc\xd8\xee\xe9'
 
 # Party2 is the payee, who can withdraw the funds after the unlock period
-PARTY2=b'\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01'
+PARTY2 = b'\x8a\xed\xf3\xc92;\xd2\xeb\xb6\x8b\xe7mi\x9b=\xa4m{wz'
 
-unlockTime = 1563148800  # July 15, 2019 00:00:00 UTC
+unlockTime = 1531501200  # soon. real soon
 
 # mainnet
 #MCT_SCRIPTHASH = b'?\xbc`|\x12\xc2\x87642$\xa4\xb4\xd8\xf5\x13\xa5\xc2|\xa8'
@@ -97,6 +97,7 @@ def Main(operation, args):
                     Delete('Party2_Payee_Change_Approval')
                 else:  
                     Put('Party1_Payee_Change_Approval', new_payee)
+                return True
 
             if CheckWitness(current_payee):  # current payee approval
                 party1_payee = Get('Party1_Payee_Change_Approval')
@@ -106,6 +107,11 @@ def Main(operation, args):
                     Delete('Party2_Payee_Change_Approval')
                 else:  
                     Put('Party1_Payee_Change_Approval', new_payee)
+                return True
+
+            print('Not authorized to approve payee change')
+            return False
+
 
         # getCurrentPayee() - return currently set payee value
         
@@ -131,6 +137,7 @@ def Main(operation, args):
         if operation == 'withdraw':
             header = GetHeader(GetHeight())
             if header.Timestamp < unlockTime:
+                print('unlock period has not yet expired')
                 return False
 
             # This contract's script hash, owner of the locked MCT tokens
@@ -139,12 +146,13 @@ def Main(operation, args):
             # Payout to current payee address
             payee = Get('payee')
 
-            if len(current_payee) != 20:
-                current_payee = PARTY2
+            if len(payee) != 20:
+                payee = PARTY2
 
             t_amount = MCTContract('balanceOf', [myhash])
 
             if t_amount > 0:
+                print('Transferring all funds in contract to payee')
                 return MCTContract('transfer', [myhash, payee, t_amount])
             else:
                 print('No funds in contract')
