@@ -92,7 +92,7 @@ def Main(operation, args):
             if CheckWitness(PARTY1):  # depositor approval
                 party2_payee = Get('Party2_Payee_Change_Approval')
                 if new_payee == party2_payee:
-                    payee = new_payee 
+                    Put('payee', new_payee) 
                     Delete('Party1_Payee_Change_Approval')
                     Delete('Party2_Payee_Change_Approval')
                 else:  
@@ -101,7 +101,7 @@ def Main(operation, args):
             if CheckWitness(current_payee):  # current payee approval
                 party1_payee = Get('Party1_Payee_Change_Approval')
                 if new_payee == party1_payee:
-                    payee = new_payee 
+                    Put('payee', new_payee) 
                     Delete('Party1_Payee_Change_Approval')
                     Delete('Party2_Payee_Change_Approval')
                 else:  
