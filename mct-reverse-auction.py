@@ -1,9 +1,11 @@
 """
-MCT reverse auction example
+MCT Reverse Auction Example
 
 Notes for this project:
-* This project needs to have a default selling price.
-* This price needs to decrease over time.
+* This project needs to have a default selling price for tokens (let's say 500 MCT).
+* A minimum price should be set, the token price cannot go below that.
+* This price needs to decrease over time (every x number of blocks) until the token sells.
+*
 """
 
 from boa.interop.Neo.Runtime import GetTrigger, CheckWitness
@@ -23,9 +25,17 @@ MCT_SCRIPTHASH = b'\x8dKL\x14V4\x17\xc6\x91\x91\xe0\x8b\xe0\xb8m\xdc\xb4\xbc\x86
 # privatenet
 MCTContract = RegisterAppCall('c186bcb4dc6db8e08be09191c6173456144c4b8d', 'operation', 'args')
 
+DEFAULT_SELL_PRICE = 500  # 500 MCT
+MIN_SELL_PRICE = 1  # 1 MCT
+
 
 def Main(operation, args):
+    """
 
+    :param operation:
+    :param args:
+    :return:
+    """
     trigger = GetTrigger()
 
     if trigger == Verification():
@@ -33,11 +43,69 @@ def Main(operation, args):
             return True
         return False
     elif trigger == Application():
-        if operation ==
+        if operation == '':
+            print('')
+            totalcalls = Get('totalCalls')
+            totalcalls = totalcalls + 1
+            print(totalcalls)
+            if Put('totalCalls', totalcalls):
+                return True
+            print('staked storage call failed')
+            return False
 
 
+def handle_token_received(chash, args):
+    arglen = len(args)
+
+    if arglen < 3:
+        print('arg length incorrect')
+        return False
+
+    t_from = args[0]
+    t_to = args[1]
+    t_amount = args[2]
+
+    if arglen == 4:
+        extra_arg = args[3]  # extra argument passed by transfer()
+
+    if len(t_from) != 20:
+        return False
+
+    if len(t_to) != 20:
+        return False
+
+    myhash = GetExecutingScriptHash()
+
+    if t_to != myhash:
+        return False
+
+    if t_from == OWNER:
+        # topping up contract token balance, just return True to allow
+        return True
+
+    if extra_arg == 'reject-me':
+        print('rejecting transfer')
+        Delete(t_from)
+        return False
+    else:
+        print('received MCT tokens!')
+        totalsent = Get(t_from)
+        totalsent = totalsent + t_amount
+        if Put(t_from, totalsent):
+            return True
+        print('staked storage call failed')
+        return False
 
 
+# Staked storage appcalls
+
+def Get(key):
+    return MCTContract('Get', [key])
 
 
+def Delete(key):
+    return MCTContract('Delete', [key])
 
+
+def Put(key, value):
+    return MCTContract('Put', [key, value])
