@@ -5,7 +5,9 @@ Notes for this project:
 * This project needs to have a default selling price for tokens (let's say 500 MCT).
 * A minimum price should be set, the token price cannot go below that.
 * This price needs to decrease over time (every x number of blocks) until the token sells.
-*
+* Create an algorithm that decreases the selling price of tokens based on past transactions. Algorithm specs:
+    * Record the transaction id's and selling price from the last 20,000 blocks
+    *
 """
 
 from boa.interop.Neo.Runtime import GetTrigger, CheckWitness
@@ -39,9 +41,13 @@ def Main(operation, args):
     trigger = GetTrigger()
 
     if trigger == Verification():
+        # This should never be necessary but just in case someone
+        # accidentally sends non-MCT assets to the contract they
+        # can be recovered instead of being burned forever
         if CheckWitness(OWNER):
             return True
         return False
+
     elif trigger == Application():
         if operation == '':
             print('')
