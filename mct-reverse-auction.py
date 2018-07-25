@@ -1,13 +1,18 @@
-"""
-MCT Reverse Auction Example
+"""MCT Reverse Auction Example
 
 Notes for this project:
 * This project needs to have a default selling price for tokens (let's say 500 MCT).
 * A minimum price should be set, the token price cannot go below that.
 * This price needs to decrease over time (every x number of blocks) until the token sells.
-* Create an algorithm that decreases the selling price of tokens based on past transactions. Algorithm specs:
-    * Record the transaction id's and selling price from the last 20,000 blocks
-    *
+* Create an algorithm that decreases the selling price of tokens based on past transactions. Algorithm:
+    1. reset the counter, the sum, and the average selling price to 0
+    2. add up the selling price from each of the transactions that this contract has done over the last
+        25,000 blocks (about a week) and increment a counter each time
+        * at init, add 25000 to current block and set that equal to future_block
+        * perform the process described in '2' until current_block == future_block
+    3. divide the sum of these transactions by the counter (number of transactions) to get the average selling price
+    4. set the selling price to the average selling price
+    5. restart the loop
 """
 
 from boa.interop.Neo.Runtime import GetTrigger, CheckWitness
@@ -27,14 +32,19 @@ MCT_SCRIPTHASH = b'\x8dKL\x14V4\x17\xc6\x91\x91\xe0\x8b\xe0\xb8m\xdc\xb4\xbc\x86
 # privatenet
 MCTContract = RegisterAppCall('c186bcb4dc6db8e08be09191c6173456144c4b8d', 'operation', 'args')
 
-DEFAULT_SELL_PRICE = 500  # 500 MCT
+ORIGINAL_SELL_PRICE = 500  # 500 MCT
 MIN_SELL_PRICE = 1  # 1 MCT
+
+sell_price = 0
 
 
 def Main(operation, args):
     """
 
     :param operation:
+        * 'buy'
+        * 'sell'
+
     :param args:
     :return:
     """
@@ -49,15 +59,16 @@ def Main(operation, args):
         return False
 
     elif trigger == Application():
-        if operation == '':
-            print('')
-            totalcalls = Get('totalCalls')
-            totalcalls = totalcalls + 1
-            print(totalcalls)
-            if Put('totalCalls', totalcalls):
-                return True
-            print('staked storage call failed')
-            return False
+        if operation == 'buy':
+            """
+            1. verify that the amount of mct from the buyer is equal to the current selling price
+            2. send the mct tokens to the owner of the sold token and send the sold token to the new owner
+            3. print(<token_script_hash> now belongs to <new_owner_script_hash>
+            """
+            print('buy this token')
+
+        if operation == 'sell':
+            print('sell this token')
 
 
 def handle_token_received(chash, args):
