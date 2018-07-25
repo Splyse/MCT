@@ -63,17 +63,23 @@ def Main(operation, args):
             """
             1. verify that the amount of mct from the buyer is equal to the current selling price
             2. send the mct tokens to the owner of the sold token and send the sold token to the new owner
-            3. print(<token_script_hash> now belongs to <new_owner_script_hash>
+            3. print(<token_script_hash> now belongs to <new_owner_script_hash>)
             """
-            print('buy this token')
+            print('buy() called')
+            return handle_token_received()
 
         if operation == 'sell':
+            """
+            1. verify that that the token script hash being sent is actually owned by the account sending it
+            2. ask the user if they would like to set the starting sell price instead of using the current default
+            """
             print('sell this token')
 
 
 def handle_token_received(chash, args):
     arglen = len(args)
 
+    # there must be at least a 'transfer from' address, 'transfer to' address, and 'transfer amount' passed as args
     if arglen < 3:
         print('arg length incorrect')
         return False
@@ -81,6 +87,7 @@ def handle_token_received(chash, args):
     t_from = args[0]
     t_to = args[1]
     t_amount = args[2]
+    extra_arg = None
 
     if arglen == 4:
         extra_arg = args[3]  # extra argument passed by transfer()
