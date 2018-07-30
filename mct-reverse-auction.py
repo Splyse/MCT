@@ -29,13 +29,13 @@ from boa.interop.Neo.TriggerType import Application, Verification
 from boa.interop.System.ExecutionEngine import GetExecutingScriptHash, GetCallingScriptHash
 from boa.interop.Neo.App import RegisterAppCall
 
-OWNER = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+OWNER = b'\x0f\x26\x1f\xe5\xc5\x2c\x6b\x01\xa4\x7b\xbd\x02\xbd\x4d\xd3\x3f\xf1\x88\xc9\xde'
 
 # mainnet
 # MCT_SCRIPTHASH = b'?\xbc`|\x12\xc2\x87642$\xa4\xb4\xd8\xf5\x13\xa5\xc2|\xa8'
 # privatenet
 MCT_SCRIPTHASH = b'\x8d\x4b\x4c\x14\x56\x34\x17\xc6\x91\x91\xe0\x8b\xe0\xb8\x6d\xdc\xb4\xbc\x86\xc1'  # for staking
-NFT_SCRIPTHASH = b'\x2a\x96\x47\x2d\x75\x30\xb1\xb6\x96\xb9\xca\xc4\x4e\xa9\xbd\xe0\xcb\x7b\x1e\x9d'  # token being sold
+NFT_SCRIPTHASH = b'\x2a\x96\x47\x2d\x75\x30\xb1\xb6\x96\xb9\xca\xc4\x4e\xa9\xbd\xe0\xcb\x7b\x1e\x9d'  # token being sold/bought
 
 # mainnet
 # MCTContract = RegisterAppCall('a87cc2a513f5d8b4a42432343687c2127c60bc3f', 'operation', 'args')
@@ -82,11 +82,11 @@ def Main(operation, args):
             3. print(<token_script_hash> now belongs to <new_owner_script_hash>)
             """
             print('buy() called')
-            contract_hash = GetCallingScriptHash()
-            if contract_hash != MCT_SCRIPTHASH:
-                print('Token type not accepted by this contract')
+
+            caller = GetCallingScriptHash()  # get the scripthash of the caller for this smart contract
+            if len(caller) != 20:  # make sure it's a valid script hash
                 return False
-            return buy(args)
+            buy(caller, args)
 
         if operation == 'sellToken':
             """
@@ -95,10 +95,51 @@ def Main(operation, args):
             3. store the token using staked storage
             """
             print('sell() called')
-            sell(args)
+            # store_token_to_be_sold(args)
+            arglen = len(args)
+
+            if arglen < 3:
+                print('arg length incorrect')
+                return False
+
+            t_from = args[0]  # the token owner's address
+            t_to = args[1]  # this smart contract's address
+            tokenid = args[2]  # nft unique id
+
+            if len(t_from) != 20:
+                return False
+            if len(t_to) != 20:
+                return False
+
+            this_contract_hash = GetExecutingScriptHash()
+            if t_to != this_contract_hash:
+                return False
+
+            if Put('token', tokenid):
+                print('Storing token to be sold')
+                return True
+            print('staked storage call failed')
+            return True
+
+        if operation == 'ownerWithdraw':
+            """
+            This method is used by the owner of the contract to withdraw MCT from the smart contract. 
+            This will be particularly useful if the MCT minimum stake amount changes. 
+            """
+            if not CheckWitness(OWNER):
+                print('only the contract owner can withdraw MCT from the contract')
+                return False
+
+            if len(args) != 1:
+                print('withdraw amount not specified')
+                return False
+
+            t_amount = args[0]  # withdrawal amount
+            this_contract_hash = GetExecutingScriptHash()  # gets the scripthash of the executing smart contract
+            return MCTContract('transfer', [this_contract_hash, OWNER, t_amount])
 
 
-def buy(args):
+def buy(caller, args):
     """
     1. verify that the amount of mct from the buyer is equal to the current selling price
     2. send the mct tokens to the owner of the sold token and send the sold token to the new owner
@@ -107,6 +148,7 @@ def buy(args):
     :return:
     """
     arglen = len(args)
+
     if arglen < 3:
         print('arg length incorrect')
         return False
@@ -130,64 +172,43 @@ def buy(args):
         return MCTContract('transfer', [myhash, t_to, t_amount])
 
 
-def sell(args):
+def store_token_to_be_sold(args):
     """
     1. verify that that the token script hash being sent is actually owned by the account sending it
     2. ask the user if they would like to set the starting sell price instead of using the current default
     3. store the token using staked storage
-    :param args:
-    :return:
+    :param args: list of arguments
+        :arg 0: seller's wallet address
+        :arg 1: mct reverse dutch auction contract address
+        :arg 2: token id (Non-Fungible Token)
+    :return: boolean value depending on success or failure
     """
+
     arglen = len(args)
+
     if arglen < 3:
         print('arg length incorrect')
         return False
 
-    t_from = args[0]
-    selling_token_hash = args[1]
-    mct_stake = args[2]
-    sell_price = ORIGINAL_SELL_PRICE
+    t_from = args[0]  # the token owner's address
+    t_to = args[1]  # this smart contract's address
+    tokenid = args[2]  # nft unique id
 
     if len(t_from) != 20:
         return False
+    if len(t_to) != 20:
+        return False
 
-    myhash = GetExecutingScriptHash()
+    this_contract_hash = GetExecutingScriptHash()
+    if t_to != this_contract_hash:
+        return False
 
-    if t_from != myhash:
-
-
+    if Put('token', tokenid):
+        print('Storing token to be sold')
+        return True
+    print('staked storage call failed')
     return True
 
-
-
-
-
-
-'''
-def handle_token_received(args):
-    arglen = len(args)
-    if arglen < 3:
-        print('arg length incorrect')
-        return False
-
-    t_from = args[0]  # transfer from address
-    t_to = args[1]  # transfer to address
-    t_amount = args[2]  # transfer amount
-
-    if arglen == 4:
-        extra_arg = args[3]
-
-    if len(t_from) != 20 or len(t_to) != 20:
-        return False
-
-    if t_amount != sell_price:
-        return False
-
-    myhash = GetExecutingScriptHash()
-
-    if t_to != myhash:  # the person executing this contract should be the same person receiving funds
-        return False
-'''
 
 # Staked storage appcalls
 
