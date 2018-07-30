@@ -22,6 +22,7 @@ from boa.interop.Neo.App import RegisterAppCall, DynamicAppCall
 from boa.builtins import concat, range
 from boa.interop.Neo.Runtime import GetTrigger, CheckWitness, Notify
 from boa.interop.Neo.TriggerType import Application, Verification
+from boa.interop.Neo.Blockchain import GetContract
 
 name = 'Non-Fungible Token Template'
 symbol = 'NFT'
@@ -38,7 +39,7 @@ OnApprove = RegisterAction('approve', 'addr_from', 'addr_to', 'amount')
 OnNFTApprove = RegisterAction('NFTapprove', 'addr_from', 'addr_to', 'tokenid')
 
 
-def Main(auction_hash, operation, args):
+def Main(operation, args):
     """
 
     :param operation: str The name of the operation to perform
@@ -411,7 +412,10 @@ def do_mint_nft(ctx, t_owner, t_ro, t_rw, t_uri):
 
         new_circulation = t_id + 1
         Put(ctx, in_circulation_key, new_circulation)
-        startAuction(ctx)
+
+        if SafeGetContract(ctx, t_owner):
+            auction_contract = DynamicAppCall(t_owner, 'onTokenTransfer', args)
+
         return True
 
     else:
@@ -455,3 +459,20 @@ def addTokenToOwnersList(ctx, t_owner, t_id):
     newbalance = length + 1
     Put(ctx, t_owner, newbalance)
 
+
+def SafeGetContract(ctx, scripthash):
+    """
+    Contract/Not Contract - uses whitelist until Neo core can check for a contract
+    in storage without throwing a FAULT on a non-existent contract
+
+    :return:
+        object or scripthash representing valid contract in storage
+    """
+
+    contract = None
+    if Get(ctx, 'WLEnabled'):
+        whitelistkey = concat("wl/", scripthash)
+        contract = Get(ctx, whitelistkey)
+    else:
+        contract = GetContract(scripthash)
+    return contract
