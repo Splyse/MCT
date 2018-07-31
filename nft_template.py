@@ -238,12 +238,12 @@ def do_transfer(ctx, t_from, t_to, t_id):
             print("token is not owned by tx sender")
             return False
 
-        res = removeTokenFromOwnersList(ctx, t_from, t_id)
+        res = remove_token_from_owners_list(ctx, t_from, t_id)
         if res == False:
             print("unable to transfer token")
             return False
 
-        addTokenToOwnersList(ctx, t_to, t_id)
+        add_token_to_owners_list(ctx, t_to, t_id)
 
         Put(ctx, t_id, t_to)
 
@@ -297,12 +297,12 @@ def do_transfer_from(ctx, t_from, t_to, t_id):
 
     if CheckWitness(authorized_spender):
 
-        res = removeTokenFromOwnersList(ctx, t_from, t_id)
+        res = remove_token_from_owners_list(ctx, t_from, t_id)
         if res == False:
             print("unable to transfer token")
             return False
 
-        addTokenToOwnersList(ctx, t_to, t_id)
+        add_token_to_owners_list(ctx, t_to, t_id)
 
         Put(ctx, t_id, t_to)
 
@@ -408,13 +408,13 @@ def do_mint_nft(ctx, t_owner, t_ro, t_rw, t_uri):
         Put(ctx, rwkey, t_rw)
         Put(ctx, urikey, t_uri)
 
-        addTokenToOwnersList(ctx, t_owner, t_id)
+        add_token_to_owners_list(ctx, t_owner, t_id)
 
         new_circulation = t_id + 1
         Put(ctx, in_circulation_key, new_circulation)
 
-        if SafeGetContract(ctx, t_owner):
-            auction_contract = DynamicAppCall(t_owner, 'onTokenTransfer', args)
+        if GetContract(t_owner):  # t_owner is the MCT-reverse-auction contract
+            auction_contract = DynamicAppCall(t_owner, 'onTokenTransfer')
 
         return True
 
@@ -423,7 +423,7 @@ def do_mint_nft(ctx, t_owner, t_ro, t_rw, t_uri):
         return False
 
 
-def removeTokenFromOwnersList(ctx, t_owner, t_id):
+def remove_token_from_owners_list(ctx, t_owner, t_id):
     length = Get(ctx, t_owner)
     if len(length) == 0:
         length = 0
@@ -434,10 +434,10 @@ def removeTokenFromOwnersList(ctx, t_owner, t_id):
         if id == t_id:
             lasttoken_idx = length - 1
             swapkey = concat(t_owner, lasttoken_idx)
-            swapToken = Get(ctx, t_owner, lasttoken_idx)
+            swapToken = Get(ctx, t_owner, lasttoken_idx)  # why passing an extra param?
             Put(ctx, tokkey, swapToken)
             Delete(ctx, swapkey)
-            Put(ctx, lasttoken_idx)
+            Put(ctx, lasttoken_idx)  # why not passing the value param?
             print("removed token from owners list")
             newbalance = length - 1
             if newbalance > 0:
@@ -449,7 +449,7 @@ def removeTokenFromOwnersList(ctx, t_owner, t_id):
     return False
 
 
-def addTokenToOwnersList(ctx, t_owner, t_id):
+def add_token_to_owners_list(ctx, t_owner, t_id):
     length = Get(ctx, t_owner)
     if len(length) == 0:
         length = 0
@@ -460,7 +460,7 @@ def addTokenToOwnersList(ctx, t_owner, t_id):
     Put(ctx, t_owner, newbalance)
 
 
-def SafeGetContract(ctx, scripthash):
+def safe_get_contract(ctx, scripthash):
     """
     Contract/Not Contract - uses whitelist until Neo core can check for a contract
     in storage without throwing a FAULT on a non-existent contract
