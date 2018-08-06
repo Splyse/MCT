@@ -1,18 +1,17 @@
 """
-Neo Non-Fungible Token Smart Contract Template
-==============================================
+NEO Non-Fungible Token Smart Contract Template
 
-Author: Joe Stewart
-Email: hal0x2328@splyse.tech
-Version: 0.1
-Date: Mar 10 2018
+Authors: Joe Stewart, Jonathan Winter
+Email: hal0x2328@splyse.tech, jonathan@splyse.tech
+Version: 0.2
+Date: 06 August 2018
 License: MIT
 
 Based on NEP5 template by Tom Saunders
 
 Compile and deploy with neo-python:
-> build nft_template.py
-> import contract nft_template.avm 0710 05 True False
+neo> build nft_template.py
+neo> import contract nft_template.avm 0710 05 True False
 
 """
 
@@ -24,14 +23,15 @@ from boa.interop.Neo.Runtime import GetTrigger, CheckWitness, Notify
 from boa.interop.Neo.TriggerType import Application, Verification
 from boa.interop.Neo.Blockchain import GetContract
 
-name = 'Non-Fungible Token Template'
-symbol = 'NFT'
-in_circulation_key = b'in_circulation'
+TOKEN_NAME = 'Non-Fungible Token'
+TOKEN_SYMBOL = 'NFT'
+TOKEN_DECIMALS = 8
+TOKEN_CIRC_KEY = b'in_circulation'
 
 # This is the script hash of the address for the owner of the contract
 # This can be found in ``neo-python`` with the wallet open, use ``wallet`` command
 # owner = b'+z\x15\xd2\xc6e\xa9\xc3B\xf0jI\x8fW\x13\xa4\x93\x14\xc1\x04'
-owner = b'\x0f\x26\x1f\xe5\xc5\x2c\x6b\x01\xa4\x7b\xbd\x02\xbd\x4d\xd3\x3f\xf1\x88\xc9\xde'
+TOKEN_CONTRACT_OWNER = b'\x0f\x26\x1f\xe5\xc5\x2c\x6b\x01\xa4\x7b\xbd\x02\xbd\x4d\xd3\x3f\xf1\x88\xc9\xde'
 
 OnTransfer = RegisterAction('transfer', 'addr_from', 'addr_to', 'amount')
 OnNFTTransfer = RegisterAction('NFTtransfer', 'addr_from', 'addr_to', 'tokenid')
@@ -54,19 +54,15 @@ def Main(operation, args):
     - balanceOf(owner): returns owner's current total tokens owned
     - circulation(): returns current number of tokens in circulation
     - decimals(): returns number of decimals of token
-    - mintToken(owner, ROData, RWData, URI): create a new NFT token
+    - mintToken(owner, ROData): create a new NFT token
     - modifyRWData(tokenid, RWData): modify a token's RW data
-    - modifyURI(tokenid, URI): modify a token's URI
     - name(): returns name of token
     - ownerOf(tokenid): returns owner of a token
     - symbol(): returns token symbol
     - tokenOfOwnerByIndex(owner, idx): returns one token from owner's collection
-    - tokenROData(tokenid): returns a token's RO data
-    - tokenRWData(tokenid): returns a token's RW data
-    - tokenURI(tokenid): returns a token's URI
-    - transfer(from, to, tokenid): transfers a token
+    - properties(tokenid): returns a token's RO data
+    - transfer(to, tokenid): transfers a token
     - transferFrom(from, to, tokenid): transfers a token by authorized spender
-
     """
 
     trigger = GetTrigger()
@@ -104,7 +100,7 @@ def Main(operation, args):
                 t_owner = args[0]
                 t_idx = args[1]
                 if len(t_idx) == 0:
-                    t_idx = 0 
+                    t_idx = 0
                 ownerkey = concat(t_owner, t_idx)
                 return Get(ctx, ownerkey)
             return arg_error
@@ -113,7 +109,7 @@ def Main(operation, args):
             if len(args) == 1:
                 t_id = args[0]
                 if len(t_id) == 0:
-                    t_id = 0 
+                    t_id = 0
                 t_owner = Get(ctx, t_id)
                 if len(t_owner) > 0:
                     return t_owner
@@ -125,7 +121,7 @@ def Main(operation, args):
             if len(args) == 1:
                 t_id = args[0]
                 if len(t_id) == 0:
-                    t_id = 0 
+                    t_id = 0
                 rokey = concat('ro/', t_id)
                 return Get(ctx, rokey)
             return arg_error
@@ -134,7 +130,7 @@ def Main(operation, args):
             if len(args) == 1:
                 t_id = args[0]
                 if len(t_id) == 0:
-                    t_id = 0 
+                    t_id = 0
                 rwkey = concat('rw/', t_id)
                 return Get(ctx, rwkey)
             return arg_error
@@ -143,7 +139,7 @@ def Main(operation, args):
             if len(args) == 1:
                 t_id = args[0]
                 if len(t_id) == 0:
-                    t_id = 0 
+                    t_id = 0
                 urikey = concat('uri/', t_id)
                 return Get(ctx, urikey)
             return arg_error
@@ -205,7 +201,7 @@ def Main(operation, args):
             if len(args) == 1:
                 t_id = args[0]
                 if len(t_id) == 0:
-                    t_id = 0 
+                    t_id = 0
                 allowance_key = concat("approved/", t_id)
                 return Get(ctx, allowance_key)
             return arg_error
@@ -216,7 +212,14 @@ def Main(operation, args):
 
 
 def do_transfer(ctx, t_from, t_to, t_id):
+    """
 
+    :param ctx:
+    :param t_from:
+    :param t_to:
+    :param t_id:
+    :return:
+    """
     if len(t_id) == 0:
         t_id = 0
 
@@ -226,6 +229,7 @@ def do_transfer(ctx, t_from, t_to, t_id):
     if len(t_from) != 20:
         return False
 
+    # Verifies that the calling contract has verified the required script hashes of the transaction/block
     if CheckWitness(t_from):
 
         if t_from == t_to:
@@ -264,7 +268,14 @@ def do_transfer(ctx, t_from, t_to, t_id):
 
 
 def do_transfer_from(ctx, t_from, t_to, t_id):
+    """
 
+    :param ctx:
+    :param t_from:
+    :param t_to:
+    :param t_id:
+    :return:
+    """
     if len(t_id) == 0:
         t_id = 0
 
@@ -321,12 +332,19 @@ def do_transfer_from(ctx, t_from, t_to, t_id):
 
 
 def do_approve(ctx, t_spender, t_id, revoke):
+    """
 
+    :param ctx:
+    :param t_spender:
+    :param t_id:
+    :param revoke:
+    :return:
+    """
     if len(t_spender) != 20:
         return False
 
     if len(t_id) == 0:
-       t_id = 0 
+        t_id = 0
 
     if len(revoke) == 0:
         revoke = 0
@@ -347,7 +365,7 @@ def do_approve(ctx, t_spender, t_id, revoke):
             OnNFTApprove(t_owner, '', t_id)
             return True
 
-        # only one third-party spender can be approved 
+        # only one third-party spender can be approved
         # at any given time for a specific token
 
         Put(ctx, approval_key, t_spender)
@@ -361,7 +379,14 @@ def do_approve(ctx, t_spender, t_id, revoke):
 
 
 def do_modify_token(ctx, prefix, t_id, t_data):
+    """
 
+    :param ctx:
+    :param prefix:
+    :param t_id:
+    :param t_data:
+    :return:
+    """
     if len(t_id) == 0:
         t_id = 0
 
@@ -382,7 +407,15 @@ def do_modify_token(ctx, prefix, t_id, t_data):
 
 
 def do_mint_nft(ctx, t_owner, t_ro, t_rw, t_uri):
+    """
 
+    :param ctx:
+    :param t_owner:
+    :param t_ro:
+    :param t_rw:
+    :param t_uri:
+    :return:
+    """
     if CheckWitness(owner):
         t_id = Get(ctx, in_circulation_key)
 
@@ -460,6 +493,13 @@ def removeTokenFromOwnersList(ctx, t_owner, t_id):
 
 
 def addTokenToOwnersList(ctx, t_owner, t_id):
+    """
+
+    :param ctx:
+    :param t_owner:
+    :param t_id:
+    :return:
+    """
     length = Get(ctx, t_owner)
     if len(length) == 0:
         length = 0
@@ -468,21 +508,3 @@ def addTokenToOwnersList(ctx, t_owner, t_id):
     print("added token to owners list")
     newbalance = length + 1
     Put(ctx, t_owner, newbalance)
-
-
-def SafeGetContract(ctx, scripthash):
-    """
-    Contract/Not Contract - uses whitelist until Neo core can check for a contract
-    in storage without throwing a FAULT on a non-existent contract
-
-    :return:
-        object or scripthash representing valid contract in storage
-    """
-
-    contract = None
-    if Get(ctx, 'WLEnabled'):
-        whitelistkey = concat("wl/", scripthash)
-        contract = Get(ctx, whitelistkey)
-    else:
-        contract = GetContract(scripthash)
-    return contract
