@@ -414,7 +414,7 @@ def do_mint_nft(ctx, t_owner, t_ro, t_rw, t_uri):
         Put(ctx, in_circulation_key, new_circulation)
 
         if SafeGetContract(ctx, t_owner):
-            auction_contract = DynamicAppCall(t_owner, 'onTokenTransfer', args)
+            auction_contract = DynamicAppCall(t_owner, 'onTokenTransfer')
 
         return True
 
@@ -424,11 +424,20 @@ def do_mint_nft(ctx, t_owner, t_ro, t_rw, t_uri):
 
 
 def removeTokenFromOwnersList(ctx, t_owner, t_id):
+    """
+    use find instead, rewrite whole template, take away rw method (call ro method properties or something)
+    look at machoman nft
+    look at nel gladiator nft
+    :param ctx:
+    :param t_owner:
+    :param t_id:
+    :return:
+    """
     length = Get(ctx, t_owner)
     if len(length) == 0:
         length = 0
 
-    for t_idx in range(0,length):
+    for t_idx in range(0, length):
         tokkey = concat(t_owner, t_idx)
         id = Get(ctx, tokkey)
         if id == t_id:
@@ -438,6 +447,7 @@ def removeTokenFromOwnersList(ctx, t_owner, t_id):
             Put(ctx, tokkey, swapToken)
             Delete(ctx, swapkey)
             Put(ctx, lasttoken_idx)
+            Put()
             print("removed token from owners list")
             newbalance = length - 1
             if newbalance > 0:
