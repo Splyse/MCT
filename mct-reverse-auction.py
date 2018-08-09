@@ -1,12 +1,5 @@
 """MCT Reverse Dutch Auction Example
 
-More notes:
-* Someone should be able to send a non-fungible token to the smart contract (along with some other stuff)
-    to be able to sell the NFT. The
-
-
-
-
 Notes for this project:
 * This project needs to have a default selling price for tokens (let's say 500 MCT).
 * A minimum price should be set, the token price cannot go below that.
@@ -22,6 +15,10 @@ Notes for this project:
     3. divide the sum of these transactions by the counter (number of transactions) to get the average selling price
     4. set the selling price to the average selling price
     5. restart the loop
+
+More notes:
+* Someone should be able to send a non-fungible token to the smart contract (along with some other stuff)
+    to be able to sell the NFT.
 """
 
 from boa.interop.Neo.Runtime import GetTrigger, CheckWitness

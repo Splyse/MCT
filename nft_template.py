@@ -70,7 +70,7 @@ def Main(operation, args):
     if trigger == Verification():
 
         # check if the invoker is the owner of this contract
-        is_owner = CheckWitness(owner)
+        is_owner = CheckWitness(TOKEN_CONTRACT_OWNER)
 
         # If owner, proceed
         if is_owner:
@@ -78,39 +78,83 @@ def Main(operation, args):
 
     elif trigger == Application():
 
-        if operation == 'name':
-            return name
-
-        elif operation == 'decimals':
-            # NFT tokens will always be non-divisible by nature
-            return 0
-
-        elif operation == 'symbol':
-            return symbol
-
         ctx = GetContext()
 
-        if operation == 'circulation' or operation == 'totalSupply':
-            return Get(ctx, in_circulation_key)
+        if operation == 'name':
+            name = Get(ctx, 'name')
+            if name:
+                return name
+            else:
+                return TOKEN_NAME
+
+        elif operation == 'symbol':
+            symbol = Get(ctx, 'symbol')
+            if symbol:
+                return symbol
+            else:
+                return TOKEN_SYMBOL
+
+        elif operation == 'totalSupply':
+            return Get(ctx, TOKEN_CIRC_KEY)
+
+        # elif operation == 'decimals':
+        # NFT tokens will always be non-divisible by nature
+        #    return 0
 
         arg_error = 'Incorrect Arg Length'
 
-        if operation == 'tokenOfOwnerByIndex':
-            if len(args) == 2:
-                t_owner = args[0]
-                t_idx = args[1]
-                if len(t_idx) == 0:
-                    t_idx = 0
-                ownerkey = concat(t_owner, t_idx)
-                return Get(ctx, ownerkey)
+        if operation == 'balanceOf':
+            if len(args) == 1:
+                # account = args[0]  # bytearray - account
+                return Get(ctx, args[0])
             return arg_error
 
-        elif operation == 'ownerOf':
+        elif operation == 'transfer':
+            if len(args) == 2:
+                # t_to = args[0]  # bytearray - transfer to address
+                # t_id = args[1]  # bytearray - token id
+                return do_transfer(ctx, args[0], args[1])
+            return arg_error
+
+        elif operation == 'transferFrom':
+            if len(args) == 3:
+                # t_from = args[0] # bytearray - transfer from address (could be an authorized spender)
+                # t_to = args[1]  # bytearray - transfer to address
+                # t_id = args[2]  # bytearray  - token id
+                return do_transfer_from(ctx, args[0], args[1], args[2])
+            return arg_error
+
+        elif operation == 'approve':
+            if len(args) == 3:
+                # t_spender = args[0]  # bytearray - token spender (authorized spender)
+                # t_id = args[1]  # bytearray - token id
+                # revoke = args[2]  # set to 1 to revoke previous approval
+                return do_approve(ctx, args[0], args[1], args[2])
+            return arg_error
+
+        elif operation == 'allowance':
             if len(args) == 1:
                 t_id = args[0]
                 if len(t_id) == 0:
                     t_id = 0
-                t_owner = Get(ctx, t_id)
+                allowance_key = concat("approved/", t_id)
+                return Get(ctx, allowance_key)
+            return arg_error
+
+        if operation == 'tokensOfOwner':
+            if len(args) == 1:
+                # t_owner = args[0]
+                return Get(ctx, args[0])
+            return arg_error
+
+        elif operation == 'ownerOf':
+            if len(args[0]) == 1:
+                # t_id = args[0]
+                if len(args[0]) == 0:
+                    # t_id = 0
+                    args[0] = 0
+                # t_owner = Get(ctx, t_id)
+                t_owner = Get(ctx, args[0])
                 if len(t_owner) > 0:
                     return t_owner
                 else:
@@ -119,28 +163,21 @@ def Main(operation, args):
 
         elif operation == 'tokenROData':
             if len(args) == 1:
-                t_id = args[0]
-                if len(t_id) == 0:
-                    t_id = 0
-                rokey = concat('ro/', t_id)
+                # t_id = args[0]
+                if len(args[0]) == 0:
+                    # t_id = 0
+                    args[0] = 0
+                rokey = concat('ro/', args[0])
                 return Get(ctx, rokey)
-            return arg_error
-
-        elif operation == 'tokenRWData':
-            if len(args) == 1:
-                t_id = args[0]
-                if len(t_id) == 0:
-                    t_id = 0
-                rwkey = concat('rw/', t_id)
-                return Get(ctx, rwkey)
             return arg_error
 
         elif operation == 'tokenURI':
             if len(args) == 1:
-                t_id = args[0]
-                if len(t_id) == 0:
-                    t_id = 0
-                urikey = concat('uri/', t_id)
+                # t_id = args[0]
+                if len(args[0]) == 0:
+                    # t_id = 0
+                    args[0] = 0
+                urikey = concat('uri/', args[0])
                 return Get(ctx, urikey)
             return arg_error
 
@@ -165,45 +202,6 @@ def Main(operation, args):
                 t_rw = args[2]
                 t_uri = args[3]
                 return do_mint_nft(ctx, t_owner, t_ro, t_rw, t_uri)
-            return arg_error
-
-        elif operation == 'balanceOf':
-            if len(args) == 1:
-                account = args[0]
-                return Get(ctx, account)
-            return arg_error
-
-        elif operation == 'transfer':
-            if len(args) == 3:
-                t_from = args[0]
-                t_to = args[1]
-                t_id = args[2]
-                return do_transfer(ctx, t_from, t_to, t_id)
-            return arg_error
-
-        elif operation == 'transferFrom':
-            if len(args) == 3:
-                t_from = args[0]
-                t_to = args[1]
-                t_id = args[2]
-                return do_transfer_from(ctx, t_from, t_to, t_id)
-            return arg_error
-
-        elif operation == 'approve':
-            if len(args) == 3:
-                t_spender = args[0]
-                t_id = args[1]
-                revoke = args[2]  # set to 1 to revoke previous approval
-                return do_approve(ctx, t_spender, t_id, revoke)
-            return arg_error
-
-        elif operation == 'allowance':
-            if len(args) == 1:
-                t_id = args[0]
-                if len(t_id) == 0:
-                    t_id = 0
-                allowance_key = concat("approved/", t_id)
-                return Get(ctx, allowance_key)
             return arg_error
 
         print('unknown operation')
