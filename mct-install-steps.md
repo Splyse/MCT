@@ -4,8 +4,8 @@
 * [cityofzion/neo-privatenet docker image](https://hub.docker.com/r/cityofzion/neo-privatenet/)
 * [neo-privnet.wallet](https://s3.amazonaws.com/neo-experiments/neo-privnet.wallet) 
 
-`$ np-prompt -p`
 ```
+$ np-prompt -p 
 neo> open wallet {/path/to/neo-privnet.wallet}
 neo> import contract {/path/to/mct-privnet.avm} 0710 05 True True
 neo> import token 0xc186bcb4dc6db8e08be09191c6173456144c4b8d
