@@ -1,6 +1,10 @@
-# MCT Install Steps with `cityofzion/neo-privatenet` docker image and neo-python
+# MCT Install Steps
+### Requirements: 
+* [neo-python](https://github.com/CityOfZion/neo-python)
+* [cityofzion/neo-privatenet docker image](https://hub.docker.com/r/cityofzion/neo-privatenet/)
+* [neo-privnet.wallet](https://s3.amazonaws.com/neo-experiments/neo-privnet.wallet) 
 
-`np-prompt -p`
+`$ np-prompt -p`
 ```
 neo> open wallet {/path/to/neo-privnet.wallet}
 neo> import contract {/path/to/mct-privnet.avm} 0710 05 True True
