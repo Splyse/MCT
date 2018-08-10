@@ -1,7 +1,7 @@
 # MCT Install Steps
 ### Requirements: 
 * [neo-python](https://github.com/CityOfZion/neo-python)
-* [cityofzion/neo-privatenet docker image](https://hub.docker.com/r/cityofzion/neo-privatenet/)
+* [cityofzion/neo-privatenet](https://hub.docker.com/r/cityofzion/neo-privatenet/)
 * [neo-privnet.wallet](https://s3.amazonaws.com/neo-experiments/neo-privnet.wallet) 
 
 ### Open a terminal and type the following: 
