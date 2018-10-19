@@ -1,4 +1,4 @@
-![MCT Logo](https://raw.githubusercontent.com/Splyse/MCT/master/MCTLogo.png?)
+![MCT Logo](https://raw.githubusercontent.com/jhwinter/MCT/master/images/MCTLogo.png?)
 
 # Master Contract Token (MCT)
 A utility token for the Neo Smart Economy
@@ -65,7 +65,7 @@ Advanced features such as `Find` and `Migrate` are not implemented. If a smart c
 
 ## Example code
 
-An example contract for a dApp that uses MCT as its means of exchange of value as well as for storage can be found at https://github.com/Splyse/MCT/blob/master/mct-dapp-template.py - this contract could be deployed for only 90 GAS.
+An example contract for a dApp that uses MCT as its means of exchange of value as well as for storage can be found at [mct-dapp-template.py](https://github.com/Splyse/MCT/blob/master/mct-dapp-template.py) - this contract could be deployed for only 90 GAS.
 
 ## TestNet contract
 
@@ -73,8 +73,9 @@ Two versions of MCT exist on the Neo TestNet, tokens CTX (scripthash 9aff1e08aea
 
 ## Privnet contract
 
-The MCT contract source is not yet publicly available, however, a custom-compiled version is available for the neo-privnet-docker environment, using the private key of the privnet owner wallet (address: AK2nJJpJr6o664CWJKi1QRXjqeic2zRp8y, WIF: KxDgvEKzgSBPPfuVfw67oPQBSjidEiqTHURKSDL1R7yGaGYAeYnr) as the contract owner. Download from https://github.com/Splyse/MCT/blob/master/mct-privnet.avm
-https://github.com/jhwinter/MCT/blob/master/mct-install-steps.md
+The MCT contract source is not yet publicly available, however, a custom-compiled version is available for the neo-privnet-docker environment, using the private key of the privnet owner wallet (address: AK2nJJpJr6o664CWJKi1QRXjqeic2zRp8y, WIF: KxDgvEKzgSBPPfuVfw67oPQBSjidEiqTHURKSDL1R7yGaGYAeYnr) as the contract owner. Download [mct-privnet.avm](https://github.com/Splyse/MCT/blob/master/mct-privnet.avm)
+
+[MCT Installation Steps](https://github.com/jhwinter/MCT/blob/master/mct-install-steps.md)
 
 ## Frequently Asked Questions
 
