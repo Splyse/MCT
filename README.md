@@ -1,4 +1,4 @@
-![MCT Logo](https://gitlab.com/jhwinter/MCT/raw/master/images/MCTLogo.png)
+![MCT Logo](https://raw.githubusercontent.com/Splyse/MCT/master/images/MCTLogo.png?)
 
 # Master Contract Token (MCT)
 A utility token for the Neo Smart Economy
