@@ -65,7 +65,7 @@ Advanced features such as `Find` and `Migrate` are not implemented. If a smart c
 
 ## Example code
 
-An example contract for a dApp that uses MCT as its means of exchange of value as well as for storage can be found at https://github.com/Splyse/MCT/blob/master/mct-dapp-template.py - this contract could be deployed for only 90 GAS.
+An example contract for a dApp that uses MCT as its means of exchange of value as well as for storage can be found at [mct-dapp-template.py](https://github.com/Splyse/MCT/blob/master/mct-dapp-template.py) - this contract could be deployed for only 90 GAS.
 
 ## TestNet contract
 
