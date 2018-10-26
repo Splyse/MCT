@@ -1,11 +1,12 @@
-# MCT Install Steps using neo-local
+# Deploying the Master Contract Token (MCT) in neo-local
 ### Requirements: 
 * [neo-local](https://github.com/CityOfZion/neo-local)
 * [mct-privnet.avm](https://github.com/Splyse/MCT/blob/master/mct-privnet.avm)
 
 # Follow neo-local installation and usage instructions located [here](https://github.com/CityOfZion/neo-local/wiki)
-### After running `make start` and your neo-python prompt appears, do the following:
-Open another terminal window and move mct-privnet.avm to {/path/to/neo-local/smart-contracts/}
+### After your neo-python prompt appears, do the following:
+1. Open another terminal window and move mct-privnet.avm to {/path/to/neo-local/smart-contracts/}. Then `exit` the terminal window.
+1. In your neo-python prompt, type the following:
 ```
 neo> open wallet ./neo-privnet.wallet
 neo> import contract /smart-contracts/mct-privnet.avm 0710 05 True True False
