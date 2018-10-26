@@ -75,7 +75,7 @@ Two versions of MCT exist on the Neo TestNet, tokens CTX (scripthash 9aff1e08aea
 
 The MCT contract source is not yet publicly available, however, a custom-compiled version is available for the neo-privnet-docker environment, using the private key of the privnet owner wallet (address: AK2nJJpJr6o664CWJKi1QRXjqeic2zRp8y, WIF: KxDgvEKzgSBPPfuVfw67oPQBSjidEiqTHURKSDL1R7yGaGYAeYnr) as the contract owner. Download [mct-privnet.avm](https://github.com/Splyse/MCT/blob/master/mct-privnet.avm)
 
-[MCT Installation Steps](https://github.com/Splyse/MCT/blob/master/docs/mct-install-steps.md)
+[MCT Installation Steps](https://github.com/Splyse/MCT/blob/master/docs/neo-local.md)
 
 ## Frequently Asked Questions
 
