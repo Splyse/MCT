@@ -192,8 +192,3 @@ fabric.properties
 
 # idea folder
 .idea/
-
-
-
-# local ignores
-privnet1.wallet

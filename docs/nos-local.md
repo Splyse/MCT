@@ -11,7 +11,7 @@ docker cp mct-privnet.avm {docker container}:/smart-contracts
 
 ## Deploy (inside nos-local neo-python session)
 ```
-import contract /smart-contracts/mct-privnet.avm 0710 05 True True
+import contract /smart-contracts/mct-privnet.avm 0710 05 True True False
 ```
 Type the wallet owner password (coz) at the prompt and wait for the tx to be persisted.
 
