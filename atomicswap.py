@@ -174,7 +174,7 @@ def handle_token_received(chash, args):
 def Get(key):
    return Token1Contract('Get', [key])
 
-def Delete(key, value):
+def Delete(key):
     return Token1Contract('Delete', [key]) 
 
 def Put(key, value):
